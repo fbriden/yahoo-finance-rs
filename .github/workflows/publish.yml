@@ -1,0 +1,17 @@
+name: Publish
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --verbose
+    - name: Publish
+      run: cargo publish --token "${{ secrets.CARGO_KEY }}"

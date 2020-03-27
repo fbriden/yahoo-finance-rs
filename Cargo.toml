@@ -1,12 +1,14 @@
 [package]
 name = "yahoo-finance"
 version = "0.1.0"
-authors = ["Fred Briden <fred.briden@gmail.com>"]
-license = "MIT"
+authors = [ "Fred Briden <fred.briden@gmail.com>" ]
+license-file = "LICENSE"
 description = "An API to pull financial data from Yahoo.  Great for historical prices"
-keywords = ["yahoo", "finance", "stocks"]
+keywords = [ "yahoo", "finance", "stocks" ]
 readme = "README.md"
 edition = "2018"
+
+include = [ "Cargo.toml", "LICENSE", "README.md", "src/**/*.rs" ]
 
 repository = "https://github.com/fbriden/yahoo-finance-rs"
 homepage = "https://github.com/fbriden/yahoo-finance-rs"
