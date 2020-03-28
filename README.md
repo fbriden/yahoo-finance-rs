@@ -6,10 +6,10 @@ A Rust library for getting financial information from [Yahoo!](https://finance.y
 [![Documentation][docsrs-image]][docsrs]
 [![Build Status][build-image]][build]
 
-[docsrs-image]: https://docs.rs/yahoo-finance-rs/badge.svg
-[docsrs]: https://docs.rs/yahoo-finance-rs
-[cratesio-image]: https://img.shields.io/crates/v/yahoo-finance-rs.svg
-[cratesio]: https://crates.io/crates/yahoo-finance-rs
+[docsrs-image]: https://docs.rs/yahoo-finance/badge.svg
+[docsrs]: https://docs.rs/yahoo-finance
+[cratesio-image]: https://img.shields.io/crates/v/yahoo-finance.svg
+[cratesio]: https://crates.io/crates/yahoo-finance
 [build-image]: https://github.com/fbriden/yahoo-finance-rs/workflows/Build/badge.svg
 [build]: https://github.com/fbriden/yahoo-finance-rs/actions
 
