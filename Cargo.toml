@@ -2,7 +2,7 @@
 name = "yahoo-finance"
 version = "0.1.0"
 authors = [ "Fred Briden <fred.briden@gmail.com>" ]
-license-file = "LICENSE"
+license = "MIT"
 description = "An API to pull financial data from Yahoo.  Great for historical prices"
 keywords = [ "yahoo", "finance", "stocks" ]
 readme = "README.md"

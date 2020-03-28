@@ -34,5 +34,5 @@ fn main() {
 Add this to your `Cargo.toml`:
 
 ```toml
-yahoo-finance-rs = "0.1"
+yahoo-finance = "0.1"
 ```
