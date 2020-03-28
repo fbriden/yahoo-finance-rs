@@ -13,16 +13,14 @@
 //! ```rust
 //! use yahoo_finance::{history, Interval};
 //! 
-//! fn main() {
-//!    // retrieve 6 months worth of data
-//!    let data = history::retrieve_interval("AAPL", Interval::_6mo).unwrap();
+//! // retrieve 6 months worth of data
+//! let data = history::retrieve_interval("AAPL", Interval::_6mo).unwrap();
 //! 
-//!    // print out some high numbers!
-//!    for bar in &data {
-//!       println!("Apple hit an intraday high of ${:.2} on {}.",
-//!         bar.high, bar.timestamp.format("%b %e %Y")
-//!       )
-//!    }
+//! // print out some high numbers!
+//! for bar in &data {
+//!    println!("Apple hit an intraday high of ${:.2} on {}.",
+//!      bar.high, bar.timestamp.format("%b %e %Y")
+//!    )
 //! }
 //! ```
 
