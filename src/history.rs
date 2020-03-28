@@ -9,6 +9,7 @@ fn aggregate_bars(data: chart::Result) -> Result<Vec<Bar>, Error> {
    ensure!(timestamps.len() == quotes.volume.len(), error::Other{ code: "Bad Data".to_string(), description: "Dates do not line up with quotes".to_string() });
 
    let mut result = Vec::new();
+   #[allow(clippy::needless_range_loop)]
    for i in 0..timestamps.len() {
       // skip days where we have incomplete data
       if quotes.open[i].is_none() || quotes.high[i].is_none() || quotes.low[i].is_none() || quotes.close[i].is_none() || quotes.volume[i].is_none() { continue; }
@@ -22,7 +23,7 @@ fn aggregate_bars(data: chart::Result) -> Result<Vec<Bar>, Error> {
          volume: quotes.volume[i].unwrap()
       })
    }
-   return Ok(result);
+   Ok(result)
 }
 
 /// Retrieves (at most) 6 months worth of OCLHV data for a symbol
@@ -41,7 +42,7 @@ fn aggregate_bars(data: chart::Result) -> Result<Vec<Bar>, Error> {
 /// ```
 pub fn retrieve(symbol: &str) -> Result<Vec<Bar>, Error> {
    match chart::load_daily(symbol, Interval::_6mo) {
-      Err(error) => return Err(error),
+      Err(error) => Err(error),
       Ok(data) => aggregate_bars(data)
    }
 }
@@ -67,7 +68,7 @@ pub fn retrieve_interval(symbol: &str, interval: Interval) -> Result<Vec<Bar>, E
    ensure!(!interval.is_intraday(), error::NoIntraday { interval });
 
    match chart::load_daily(symbol, interval) {
-      Err(error) => return Err(error),
+      Err(error) => Err(error),
       Ok(data) => aggregate_bars(data)
    }
 }
@@ -90,12 +91,12 @@ pub fn retrieve_interval(symbol: &str, interval: Interval) -> Result<Vec<Bar>, E
 /// ```
 pub fn retrieve_range(symbol: &str, start: DateTime<Utc>, end: Option<DateTime<Utc>>) -> Result<Vec<Bar>, Error> {
    // pre-conditions
-   let _end = end.unwrap_or(Utc::now());
+   let _end = end.unwrap_or_else(Utc::now);
    println!("{} {}", start, _end);
    ensure!(_end.signed_duration_since(start).num_seconds() > 0, error::InvalidStartDate);
 
    match chart::load_daily_range(symbol, start.timestamp(), _end.timestamp()) {
-      Err(error) => return Err(error),
+      Err(error) => Err(error),
       Ok(data) => aggregate_bars(data)
    }
 }

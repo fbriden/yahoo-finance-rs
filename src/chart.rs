@@ -29,10 +29,10 @@ pub_json!(Response { chart: Chart });
 
 fn build_chart(x: &str) -> Chart {
    let response: Response = serde_json::from_str(x).unwrap();
-   return response.chart;
+   response.chart
 }
 
-fn load(url: &String) -> std::result::Result<Result, Error> {
+fn load(url: &str) -> std::result::Result<Result, Error> {
    let resp = ureq::get(url).call();
    if resp.ok() {
       let result = build_chart(&resp.into_string().unwrap()).result.unwrap();
@@ -45,10 +45,10 @@ fn load(url: &String) -> std::result::Result<Result, Error> {
 
 pub(crate) fn load_daily(symbol: &str, interval: Interval) -> std::result::Result<Result, Error> {
    let url = format!("{url}/{symbol}?symbol={symbol}&range={period}&interval=1d", url=BASE_URL, symbol=symbol, period=interval);
-   return load(&url);
+   load(&url)
 }
 
 pub(crate) fn load_daily_range(symbol: &str, start: i64, end: i64) -> std::result::Result<Result, Error> {
    let url = format!("{url}/{symbol}?symbol={symbol}&period1={start}&period2={end}&interval=1d", url=BASE_URL, symbol=symbol, start=start, end=end);
-   return load(&url);
+   load(&url)
 }
