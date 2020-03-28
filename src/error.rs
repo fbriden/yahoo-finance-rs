@@ -1,10 +1,10 @@
 use crate::{Interval};
 use snafu::{Snafu};
 
+/// All possible errors that can occur when using yahoo finance
 #[derive(Debug, Snafu)]
 #[snafu(visibility = "pub")]
 pub enum Error {
-   
    #[snafu(display("Start date cannot be after the end date"))]
    InvalidStartDate,
 

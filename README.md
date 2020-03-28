@@ -1,8 +1,38 @@
-# yahoo-finance-rs &emsp; [![Build Status]][travis] [![Latest Version]][crates.io] [![Rustc Version 1.31+]][rustc]
+# Yahoo Finance for Rust
 
-[Build Status]: https://github.com/fbriden/yahoo-finance-rs/workflows/Build/badge.svg
-[Latest Version]: https://img.shields.io/crates/v/yahoo-finance-rs.svg
-[crates.io]: https://crates.io/crates/yahoo-finance-rs
-[Rustc Version 1.31+]: https://img.shields.io/badge/rustc-1.31+-lightgray.svg
-[rustc]: https://blog.rust-lang.org/2018/12/06/Rust-1.31-and-rust-2018.html
+A Rust library for getting financial information from [Yahoo!](https://finance.yahoo.com/)
 
+[![Package][cratesio-image]][cratesio]
+[![Documentation][docsrs-image]][docsrs]
+[![Build Status][build-image]][build]
+
+[docsrs-image]: https://docs.rs/yahoo-finance-rs/badge.svg
+[docsrs]: https://docs.rs/yahoo-finance-rs
+[cratesio-image]: https://img.shields.io/crates/v/yahoo-finance-rs.svg
+[cratesio]: https://crates.io/crates/yahoo-finance-rs
+[build-image]: https://github.com/fbriden/yahoo-finance-rs/workflows/Build/badge.svg
+[build]: https://github.com/fbriden/yahoo-finance-rs/actions
+
+* Historical OHLCV pricing information
+
+```rust
+use yahoo_finance::history;
+
+fn main() {
+   // retrieve 6 months worth of data for Apple
+   let data = history::retrieve("AAPL").unwrap();
+
+   // print the date and closing price for each day we have data
+   for bar in &data {
+      println!("On {} Apple closed at ${:.2}", bar.timestamp.format("%b %e %Y"), bar.close)
+   }
+}
+```
+
+### Usage
+
+Add this to your `Cargo.toml`:
+
+```toml
+yahoo-finance-rs = "0.1"
+```
