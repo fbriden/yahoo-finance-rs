@@ -16,4 +16,4 @@ jobs:
     - name: Build
       run: cargo build --verbose
     - name: Publish
-      run: cargo publish --token "${{ secrets.CARGO_KEY }}"
+      run: cargo publish --allow-dirty --token "${{ secrets.CARGO_KEY }}"
