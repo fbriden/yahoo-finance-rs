@@ -1,9 +1,9 @@
 [package]
 name = "yahoo-finance"
-version = "0.1.1"
+version = "0.2.0"
 authors = [ "Fred Briden <fred.briden@gmail.com>" ]
 license = "MIT"
-description = "An API to pull financial data from Yahoo.  Great for historical prices"
+description = "An API to get financial data from Yahoo."
 keywords = [ "yahoo", "finance", "stocks" ]
 readme = "README.md"
 edition = "2018"
@@ -14,8 +14,16 @@ repository = "https://github.com/fbriden/yahoo-finance-rs"
 homepage = "https://github.com/fbriden/yahoo-finance-rs"
 
 [dependencies]
+base64 = "0.12"
 chrono = { version = "0.4", features = ["serde"] }
+futures-util = { version = "0.3", default-features = false, features = ["async-await", "sink", "std"] }
+protobuf = "2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 snafu = "0.6"
+tokio = { version = "0.2", default-features = false, features = [ "stream", "rt-threaded", "macros" ]}
+tokio-tungstenite = { version = "0.10", features = [ "tls" ] }
 ureq  = "0.12"
+
+[build-dependencies]
+protoc-rust = "2.0"

@@ -5,12 +5,13 @@
 //! 
 //! Currently `yahoo_finance` provides:
 //! * Historical quote information [OHCL Data](https://en.wikipedia.org/wiki/Open-high-low-close_chart) + volume
+//! * Relatively real-time quote informaton with comparible performance to the real-time updates on their website
 //! 
-//! ## Quick Example
+//! ## Quick Examples
 //! 
 //! To retrieve the intraday high for the last 3 months of Apple you can use something like:
 //! 
-//! ```rust
+//! ```no_run
 //! use yahoo_finance::{history, Interval};
 //! 
 //! // retrieve 6 months worth of data
@@ -21,6 +22,26 @@
 //!    println!("Apple hit an intraday high of ${:.2} on {}.",
 //!      bar.high, bar.timestamp.format("%b %e %Y")
 //!    )
+//! }
+//! ```
+//!
+//! To listen on relatively real-time changes in price:
+//! 
+//! ```no_run
+//! use yahoo_finance::realtime::{ Quote, Streamer };
+//!
+//! fn print_quote(quote: Quote) {
+//!    println!("At {}, {} is trading for ${}", quote.timestamp, quote.symbol, quote.price)
+//! }
+//!
+//! #[tokio::main]
+//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!    let mut streamer = Streamer::new().await;
+//!
+//!    streamer.subscribe(vec!["AAPL", "IBM", "^DJI", "^IXIC"], print_quote).await;
+//!    streamer.run().await?;
+//!
+//!    Ok(())
 //! }
 //! ```
 
@@ -44,8 +65,11 @@ mod interval;
 mod error;
 mod chart;
 
-/// Historical quote information
+/// Historical quotes
 pub mod history;
+
+/// Realtime quotes
+pub mod realtime;
 
 // re-export stuff for external use
 pub use interval::{Interval};

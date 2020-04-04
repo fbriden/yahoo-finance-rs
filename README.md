@@ -29,10 +29,30 @@ fn main() {
 }
 ```
 
+* Realtime pricing information
+
+```rust
+use yahoo_finance::{ Quote, Streamer };
+
+fn print_quote(quote: Quote) {
+   println!("At {}, {} is trading for ${}", quote.timestamp, quote.symbol, quote.price)
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+   let mut streamer = Streamer::new().await;
+
+   streamer.subscribe(vec!["AAPL", "^DJI", "^IXIC"], print_quote).await;
+   streamer.run().await;
+
+   Ok(())
+}
+```
+
 ### Usage
 
 Add this to your `Cargo.toml`:
 
 ```toml
-yahoo-finance = "0.1"
+yahoo-finance = "0.2"
 ```
