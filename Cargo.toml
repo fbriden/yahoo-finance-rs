@@ -1,6 +1,6 @@
 [package]
 name = "yahoo-finance"
-version = "0.2.0"
+version = "0.3.0"
 authors = [ "Fred Briden <fred.briden@gmail.com>" ]
 license = "MIT"
 description = "An API to get financial data from Yahoo."
@@ -17,6 +17,7 @@ homepage = "https://github.com/fbriden/yahoo-finance-rs"
 base64 = "0.12"
 chrono = { version = "0.4", features = ["serde"] }
 futures-util = { version = "0.3", default-features = false, features = ["async-await", "sink", "std"] }
+market-finance = { version = "0.1" }
 protobuf = "2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
