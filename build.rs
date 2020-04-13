@@ -1,10 +1,10 @@
-use protoc_rust::{Codegen, Customize};
+use protoc_rust::{ Codegen, Customize };
 
 fn main() {
    // Build our realtime feed structure
    Codegen::new()
-      .out_dir("src/realtime")
-      .inputs(&["src/realtime/data.proto"])
+      .out_dir("src/yahoo")
+      .inputs(&["src/yahoo/realtime.proto"])
       .includes(&[ "src" ])
       .customize(Customize { ..Default::default() })
       .run()

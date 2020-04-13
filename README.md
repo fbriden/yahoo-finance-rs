@@ -32,20 +32,40 @@ fn main() {
 * Realtime pricing information
 
 ```rust
-use yahoo_finance::{ Quote, Streamer };
-
-fn print_quote(quote: Quote) {
-   println!("At {}, {} is trading for ${}", quote.timestamp, quote.symbol, quote.price)
-}
+use futures::{ future, StreamExt };
+use yahoo_finance::Streamer;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-   let mut streamer = Streamer::new().await;
+async fn main() {
+   let mut streamer = Streamer::new(vec!["AAPL", "^DJI", "^IXIC"]);
 
-   streamer.subscribe(vec!["AAPL", "^DJI", "^IXIC"], print_quote).await;
-   streamer.run().await;
+   streamer.stream().await
+      .for_each(|quote| {
+         println!("At {}, {} is trading for ${} [{}]", quote.timestamp, quote.symbol, quote.price, quote.volume);
 
-   Ok(())
+         future::ready(())
+      })
+      .await;
+}
+```
+
+* Symbol profile information
+
+```rust
+use futures::{ future, StreamExt };
+use yahoo_finance::Streamer;
+
+#[tokio::main]
+async fn main() {
+   let mut streamer = Streamer::new(vec!["AAPL", "^DJI", "^IXIC"]);
+
+   streamer.stream().await
+      .for_each(|quote| {
+         println!("At {}, {} is trading for ${} [{}]", quote.timestamp, quote.symbol, quote.price, quote.volume);
+
+         future::ready(())
+      })
+      .await;
 }
 ```
 
@@ -54,5 +74,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 Add this to your `Cargo.toml`:
 
 ```toml
-yahoo-finance = "0.2"
+yahoo-finance = "0.3"
 ```

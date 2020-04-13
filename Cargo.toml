@@ -15,16 +15,23 @@ homepage = "https://github.com/fbriden/yahoo-finance-rs"
 
 [dependencies]
 base64 = "0.12"
-chrono = { version = "0.4", features = ["serde"] }
-futures-util = { version = "0.3", default-features = false, features = ["async-await", "sink", "std"] }
-market-finance = { version = "0.1" }
+chrono = { version = "0.4", features = [ "serde" ] }
+futures = "0.3"
+futures-util = { version = "0.3", default-features = false, features = [ "async-await", "sink", "std" ] }
+market-finance = "0.2"
 protobuf = "2"
-serde = { version = "1.0", features = ["derive"] }
+reqwest = "0.10"
+serde = { version = "1.0", features = [ "derive" ] }
 serde_json = "1.0"
 snafu = "0.6"
 tokio = { version = "0.2", default-features = false, features = [ "stream", "rt-threaded", "macros" ]}
 tokio-tungstenite = { version = "0.10", features = [ "tls" ] }
-ureq  = "0.12"
+url = "2.1"
+
+
+[dev-dependencies]
+mockito = "0.25"
+tokio-test = "0.2"
 
 [build-dependencies]
-protoc-rust = "2.0"
+protoc-rust = "2"

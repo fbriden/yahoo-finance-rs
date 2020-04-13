@@ -1,38 +1,98 @@
 use chrono::{Duration, Utc};
-use yahoo_finance::{ history, Error, Interval};
+use mockito::{mock, Mock};
+use std::env;
+use std::fs::File;
+use std::io::prelude::*;
+use tokio_test::block_on;
+use yahoo_finance::{history, Interval};
+
+fn base_mock(test_name: &str, symbol: &str, query: &str) -> std::io::Result<Mock> {
+   // Tell the actual code to use a test URL rather than the live one
+   env::set_var("TEST_URL", mockito::server_url());
+
+   // Load the simulated Yahoo data we want to test against
+   let mut file = File::open(format!("tests/history_data/{}.json", test_name))?;
+   let mut contents = String::new();
+   file.read_to_string(&mut contents)?;
+
+   // Serve up the test data on the test URL
+   Ok(mock("GET", format!("/{symbol}?{query}", symbol=symbol, query=query).as_str())
+      .with_header("content-type", "application/json")
+      .with_body(&contents)
+      .with_status(200))
+}
+
+fn build_interval(interval: Interval) -> String { format!("range={r}&interval={i}", r=interval, i=Interval::_1d) }
 
 #[test]
-fn invalid_interval() -> Result<(), Error> {
-   // GIVEN a stock
-   // WHEN we get an intraday history
-   match history::retrieve_interval("AAPL", Interval::_1m) {
-      Ok(_data) => panic!("1m intervals should NOT be allowed"),
+fn retrieve_valid() {
+   //! Ensure that we can load for valid companies
 
-      // THEN we fail
-      Err(_message) => Ok(())
-   }
+   // GIVEN - a valid response and stock symbol
+   let symbol = "AAPL";
+   let _m = base_mock("aapl", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
+
+   // WHEN - we load the data
+   let result = block_on(history::retrieve(symbol)).unwrap();
+   assert!(result.len() > 0)
 }
 
 #[test]
-fn valid_range_no_end() -> Result<(), Error> {
-   // GIVEN a stock
-   // WHEN we get a date range where the start date is after the end date
-   match history::retrieve_range("AAPL", Utc::now() + Duration::days(10), None) {
-      Ok(_data) => panic!("start date cannot be after end date"),
+#[should_panic(expected = "code: \"Not Found\"")]
+fn retrieve_invalid_symbol() {
+   //! Ensure that we gracefully fail when retrieving data for an invalid symbol
 
-      // THEN we fail
-      Err(_message) => Ok(())
-   }
+   // GIVEN - a valid response for an invalid symbol
+   let symbol = "FUBAR";
+   let _m = base_mock("not_found", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
+
+   // WHEN - we load the data
+   block_on(history::retrieve(symbol)).unwrap();
+
+   // THEN - we get an error
 }
 
 #[test]
-fn invalid_range() -> Result<(), Error> {
-   // GIVEN a stock
-   // WHEN we get a date range where the start date is after the end date
-   match history::retrieve_range("AAPL", Utc::now() - Duration::days(10), Some(Utc::now() - Duration::days(15))) {
-      Ok(_data) => panic!("start date cannot be after end date"),
+#[should_panic(expected = "NoIntraday")]
+fn retrieve_interval_invalid() {
+   //! Ensure that we gracefully fail when we use an intraday interval
 
-      // THEN we fail
-      Err(_message) => Ok(())
-   }
+   // GIVEN - a valid response for an valid symbol
+   let symbol = "AAPL";
+   let _m = base_mock("aapl", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
+
+   // WHEN - we get a date range where the start date is after the end date
+   block_on(history::retrieve_interval(symbol, Interval::_1m)).unwrap();
+
+   // THEN - we get an error
+}
+
+#[test]
+#[should_panic(expected = "InvalidStartDate")]
+fn retrieve_range_invalid1() {
+   //! Ensure that we gracefully fail when we use no end date before the start date
+
+   // GIVEN - a valid response for an valid symbol
+   let symbol = "AAPL";
+   let _m = base_mock("aapl", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
+
+   // WHEN - we get a date range where the start date is after the end date
+   block_on(history::retrieve_range(symbol, Utc::now() - Duration::days(10), Some(Utc::now() - Duration::days(15)))).unwrap();
+
+   // THEN - we get an error
+}
+
+#[test]
+#[should_panic(expected = "InvalidStartDate")]
+fn retrieve_range_invalid2() {
+   //! Ensure that we gracefully fail when we use no end date and a start date in the future
+
+   // GIVEN - a valid response for an valid symbol
+   let symbol = "AAPL";
+   let _m = base_mock("aapl", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
+
+   // WHEN - we get a date range where the start date is after the end date
+   block_on(history::retrieve_range(symbol, Utc::now() + Duration::days(10), None)).unwrap();
+
+   // THEN - we get an error
 }
