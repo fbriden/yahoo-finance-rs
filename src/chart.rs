@@ -21,7 +21,7 @@ pub_json!(Meta {
 });
 pub_json!(OHLCV { open: Vec<Option<f64>>, high: Vec<Option<f64>>, low: Vec<Option<f64>>, close: Vec<Option<f64>>, volume: Vec<Option<u64>> });
 pub_json!(Indicators { #[serde(rename = "quote")] quotes: Vec<OHLCV> });
-pub_json!(Result { meta: Meta, #[serde(rename = "timestamp")] timestamps: Vec<i64>, indicators: Indicators });
+pub_json!(Result { meta: Meta, #[serde(rename = "timestamp")] timestamps: Vec<u64>, indicators: Indicators });
 
 pub_json!(Err { code: String, description: String });
 pub_json!(Chart { result: Option<Vec<Result>>, error: Option<Err> });

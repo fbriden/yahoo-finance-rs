@@ -1,5 +1,5 @@
 use chrono::{Duration, Utc};
-use yahoo_finance::{history, Error, Interval};
+use yahoo_finance::{ history, Error, Interval};
 
 #[test]
 fn invalid_interval() -> Result<(), Error> {

@@ -1,5 +1,4 @@
 use base64::decode;
-use chrono::{DateTime, NaiveDateTime, Utc};
 use futures_util::{StreamExt, SinkExt};
 use protobuf::{ parse_from_bytes };
 use serde::{ Serialize };
@@ -8,13 +7,22 @@ use tokio::net::TcpStream;
 use tokio_tungstenite::{ connect_async, MaybeTlsStream, tungstenite::protocol::Message, tungstenite::Result, WebSocketStream };
 
 mod data;
-use data::PricingData;
+use data::{ PricingData, PricingData_MarketHoursType };
 
-mod quote;
-pub use quote::{ Quote, QuoteType, TradingSession };
+use super::{ Quote, TradingSession };
 
 #[derive(Debug, Clone, Serialize)]
 struct Subs<'a> { subscribe: Vec<&'a str> }
+
+fn convert_session(value: PricingData_MarketHoursType) -> TradingSession {
+   match value {
+      PricingData_MarketHoursType::PRE_MARKET => TradingSession::PreMarket,
+      PricingData_MarketHoursType::REGULAR_MARKET => TradingSession::Regular,
+      PricingData_MarketHoursType::POST_MARKET => TradingSession::AfterHours,
+      _ => TradingSession::Other
+   }
+}
+
 
 /// Realtime price quote streamer
 /// 
@@ -57,12 +65,11 @@ impl<'a> Streamer<'a> {
          let map = self.subscriptions.read().expect("Can't read subscriptions");
          match map.get(x.id.as_str()) {
             Some(callback) => callback(Quote {
-               symbol: x.id.clone(),
-               quote_type: QuoteType::from_pd(x.quoteType),
-               timestamp: DateTime::from_utc(NaiveDateTime::from_timestamp(x.time, 0), Utc),
-               session: TradingSession::from_pd(x.marketHours),
-               price: x.price,
-               volume: x.dayVolume
+               symbol: &x.id,
+               timestamp: x.time as u64,
+               session: convert_session(x.marketHours),
+               price: x.price as f64,
+               volume: x.dayVolume as u64
             }),
             None => ()
          }
