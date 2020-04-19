@@ -95,7 +95,6 @@ pub fn retrieve_interval(symbol: &str, interval: Interval) -> Result<Vec<Bar>, E
 pub fn retrieve_range(symbol: &str, start: DateTime<Utc>, end: Option<DateTime<Utc>>) -> Result<Vec<Bar>, Error> {
    // pre-conditions
    let _end = end.unwrap_or_else(Utc::now);
-   println!("{} {}", start, _end);
    ensure!(_end.signed_duration_since(start).num_seconds() > 0, error::InvalidStartDate);
 
    match chart::load_daily_range(symbol, start.timestamp(), _end.timestamp()) {
