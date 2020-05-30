@@ -30,7 +30,7 @@ ez_serde!(Meta {
 });
 ez_serde!(OHLCV { open: Vec<Option<f64>>, high: Vec<Option<f64>>, low: Vec<Option<f64>>, close: Vec<Option<f64>>, volume: Vec<Option<u64>> });
 ez_serde!(Indicators { #[serde(rename = "quote")] quotes: Vec<OHLCV> });
-ez_serde!(Data { meta: Meta, #[serde(rename = "timestamp")] timestamps: Vec<u64>, indicators: Indicators });
+ez_serde!(Data { meta: Meta, #[serde(rename = "timestamp")] timestamps: Vec<i64>, indicators: Indicators });
 
 ez_serde!(Error {code: String, description: String });
 ez_serde!(Chart { result: Option<Vec<Data>>, error: Option<Error> });
