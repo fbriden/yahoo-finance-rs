@@ -34,4 +34,4 @@ mockito = "0.25"
 tokio-test = "0.2"
 
 [build-dependencies]
-protoc-rust = "2"
+protobuf-codegen-pure = "2"
