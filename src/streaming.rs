@@ -84,7 +84,7 @@ impl Streamer {
 
             Quote {
                symbol: data.id.to_string(),
-               timestamp: data.time as i64,
+               timestamp: data.time as u64,
                session: convert_session(data.marketHours),
                price: data.price as f64,
                volume: data.dayVolume as u64
