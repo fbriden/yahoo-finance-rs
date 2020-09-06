@@ -1,4 +1,4 @@
-use protoc_rust::{ Codegen, Customize };
+use protobuf_codegen_pure::{ Codegen, Customize };
 
 fn main() {
    // Build our realtime feed structure
@@ -8,5 +8,5 @@ fn main() {
       .includes(&[ "src" ])
       .customize(Customize { ..Default::default() })
       .run()
-      .expect("protoc");
+      .expect("Codegen failed.");
 }
