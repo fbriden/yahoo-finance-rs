@@ -96,3 +96,33 @@ fn retrieve_range_invalid2() {
 
    // THEN - we get an error
 }
+
+#[test]
+fn retrieve_no_quote_data() {
+   //! Ensure that we gracefully handle the case where Yahoo send us an empty dictionary
+   //! of quote data
+
+   // GIVEN - a valid response with no timestmap & no quote data
+   let symbol = "AAPL";
+   let _m = base_mock("no_quote_data", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
+
+   // WHEN - we get data where the there is basically no data
+   let result = block_on(history::retrieve(symbol)).unwrap();
+   assert!(result.len() == 0)
+}
+
+#[test]
+#[should_panic(expected = "no timestamps")]
+fn retrieve_no_timestamp_data() {
+   //! Ensure that we gracefully handle the case where Yahoo send us an empty dictionary
+   //! of quote data
+
+   // GIVEN - a valid response with an empty dictionary of quote data and no timestamps
+   let symbol = "AAPL";
+   let _m = base_mock("no_timestamp_data", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
+
+   // WHEN - we get data where the there are no quotes
+   block_on(history::retrieve(symbol)).unwrap();
+
+   // THEN - we get an error
+}

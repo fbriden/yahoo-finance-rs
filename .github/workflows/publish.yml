@@ -11,8 +11,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Install binary dependencies
-      run: sudo apt install protobuf-compiler
     - name: Build
       run: cargo build --verbose
     - name: Publish

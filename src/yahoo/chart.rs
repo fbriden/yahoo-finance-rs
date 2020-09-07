@@ -28,9 +28,34 @@ ez_serde!(Meta {
    #[serde(rename = "chartPreviousClose")]
    previous_close: f32
 });
-ez_serde!(OHLCV { open: Vec<Option<f64>>, high: Vec<Option<f64>>, low: Vec<Option<f64>>, close: Vec<Option<f64>>, volume: Vec<Option<u64>> });
-ez_serde!(Indicators { #[serde(rename = "quote")] quotes: Vec<OHLCV> });
-ez_serde!(Data { meta: Meta, #[serde(rename = "timestamp")] timestamps: Vec<u64>, indicators: Indicators });
+
+ez_serde!(OHLCV {
+   #[serde(rename = "open", default)]
+   opens: Vec<Option<f64>>,
+
+   #[serde(rename = "high", default)]
+   highs: Vec<Option<f64>>,
+
+   #[serde(rename = "low", default)]
+   lows: Vec<Option<f64>>,
+
+   #[serde(rename = "close", default)]
+   closes: Vec<Option<f64>>,
+
+   #[serde(rename = "volume", default)]
+   volumes: Vec<Option<u64>>
+});
+
+ez_serde!(Indicators { #[serde(rename = "quote", default)] quotes: Vec<OHLCV> });
+
+ez_serde!(Data {
+   meta: Meta,
+
+   #[serde(rename = "timestamp", default)]
+   timestamps: Vec<u64>,
+
+   indicators: Indicators
+});
 
 ez_serde!(Error {code: String, description: String });
 ez_serde!(Chart { result: Option<Vec<Data>>, error: Option<Error> });
