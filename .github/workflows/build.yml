@@ -11,8 +11,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Install binary dependencies
-      run: sudo apt install protobuf-compiler
     - name: Lint
       run: cargo clippy
     - name: Build
