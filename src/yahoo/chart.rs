@@ -52,7 +52,7 @@ ez_serde!(Data {
    meta: Meta,
 
    #[serde(rename = "timestamp", default)]
-   timestamps: Vec<u64>,
+   timestamps: Vec<i64>,
 
    indicators: Indicators
 });
