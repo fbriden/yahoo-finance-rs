@@ -20,18 +20,18 @@ futures = "0.3"
 futures-util = { version = "0.3", default-features = false, features = [ "async-await", "sink", "std" ] }
 market-finance = "0.3"
 protobuf = "2"
-reqwest = "0.10"
+reqwest = { version = "0.11", default-features = false, features = [ "rustls-tls" ] }
 serde = { version = "1.0", features = [ "derive" ] }
 serde_json = "1.0"
 snafu = "0.6"
-tokio = { version = "0.2", default-features = false, features = [ "stream", "rt-threaded", "macros" ]}
-tokio-tungstenite = { version = "0.11", features = [ "tls" ] }
+tokio = { version = "1.0", default-features = false, features = [ "macros", "rt-multi-thread" ]}
+tokio-stream = "0.1"
+tokio-tungstenite = { version = "0.14", features = [ "rustls-tls" ] }
 url = "2.1"
-
 
 [dev-dependencies]
 mockito = "0.27"
-tokio-test = "0.2"
+tokio-test = "0.4"
 
 [build-dependencies]
 protobuf-codegen-pure = "2"
