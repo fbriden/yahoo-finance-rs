@@ -5,7 +5,7 @@ use serde::Deserialize;
 use snafu::{ ensure, OptionExt, ResultExt };
 use std::env;
 
-use crate::{error, Interval, Result};
+use crate::{error, Interval, Result, Timestamped};
 
 const BASE_URL: &'static str = "https://query1.finance.yahoo.com/v8/finance/chart/";
 
@@ -48,8 +48,42 @@ ez_serde!(OHLCV {
 
 ez_serde!(Indicators { #[serde(rename = "quote", default)] quotes: Vec<OHLCV> });
 
+ez_serde!(Dividend {
+    amount: f64,
+    #[serde(rename = "date")]
+    timestamp: i64
+});
+impl Timestamped for Dividend {
+    /// Gets the timestamp in millisecond accuracy
+    fn timestamp_millis(&self) -> i64 {
+        self.timestamp
+    }
+}
+
+ez_serde!(Split {
+    denominator: u8,
+    numerator: u8,
+    #[serde(rename = "splitRatio")]
+    split_ratio: String,
+    #[serde(rename = "date")]
+    timestamp: i64
+});
+impl Timestamped for Split {
+    /// Gets the timestamp in millisecond accuracy
+    fn timestamp_millis(&self) -> i64 {
+        self.timestamp
+    }
+}
+
+ez_serde!(CorporateEvents {
+    dividends: Option<std::collections::BTreeMap<i64, Dividend>>,
+    splits: Option<std::collections::BTreeMap<i64, Split>>
+});
+
 ez_serde!(Data {
    meta: Meta,
+
+   events: Option<CorporateEvents>,
 
    #[serde(rename = "timestamp", default)]
    timestamps: Vec<i64>,
@@ -85,21 +119,45 @@ async fn load(url: &Url) -> Result<Data> {
    Ok(result[0].clone())
 }
 
-pub async fn load_daily(symbol: &str, period: Interval) -> Result<Data> {
-   let mut lookup = build_query(symbol)?;
-   lookup.query_pairs_mut()
-      .append_pair("range", &period.to_string())
-      .append_pair("interval", "1d");
+async fn _load_daily(symbol: &str, period: Interval, with_events: bool) -> Result<Data> {
+    let mut lookup = build_query(symbol)?;
+    lookup
+        .query_pairs_mut()
+        .append_pair("range", &period.to_string())
+        .append_pair("interval", "1d");
+    if with_events {
+        lookup.query_pairs_mut().append_pair("events", "div|split");
+    }
 
-   load(&lookup).await
+    load(&lookup).await
+}
+
+pub async fn load_daily(symbol: &str, period: Interval) -> Result<Data> {
+    _load_daily(symbol, period, false).await
+}
+
+pub async fn load_daily_with_events(symbol: &str, period: Interval) -> Result<Data> {
+    _load_daily(symbol, period, true).await
+}
+
+async fn _load_daily_range(symbol: &str, start: i64, end: i64, with_events: bool) -> Result<Data> {
+    let mut lookup = build_query(symbol)?;
+    lookup
+        .query_pairs_mut()
+        .append_pair("period1", &start.to_string())
+        .append_pair("period2", &end.to_string())
+        .append_pair("interval", "1d");
+    if with_events {
+        lookup.query_pairs_mut().append_pair("events", "div|split");
+    }
+
+    load(&lookup).await
 }
 
 pub async fn load_daily_range(symbol: &str, start: i64, end: i64) -> Result<Data> {
-   let mut lookup = build_query(symbol)?;
-   lookup.query_pairs_mut()
-      .append_pair("period1", &start.to_string())
-      .append_pair("period2", &end.to_string())
-      .append_pair("interval", "1d");
+    _load_daily_range(symbol, start, end, false).await
+}
 
-   load(&lookup).await
+pub async fn load_daily_range_with_events(symbol: &str, start: i64, end: i64) -> Result<Data> {
+    _load_daily_range(symbol, start, end, true).await
 }
