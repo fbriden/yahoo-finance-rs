@@ -24,8 +24,8 @@ fn base_mock(test_name: &str, symbol: &str, query: &str) -> std::io::Result<Mock
 
 fn build_interval(interval: Interval) -> String { format!("range={r}&interval={i}", r=interval, i=Interval::_1d) }
 
-#[test]
-fn retrieve_valid() {
+#[tokio::test]
+async fn retrieve_valid() {
    //! Ensure that we can load for valid companies
 
    // GIVEN - a valid response and stock symbol
@@ -33,13 +33,13 @@ fn retrieve_valid() {
    let _m = base_mock("aapl", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
 
    // WHEN - we load the data
-   let result = block_on(history::retrieve(symbol)).unwrap();
+   let result = history::retrieve(symbol).await.unwrap();
    assert!(result.len() > 0)
 }
 
-#[test]
+#[tokio::test]
 #[should_panic(expected = "code: \"Not Found\"")]
-fn retrieve_invalid_symbol() {
+async fn retrieve_invalid_symbol() {
    //! Ensure that we gracefully fail when retrieving data for an invalid symbol
 
    // GIVEN - a valid response for an invalid symbol
@@ -47,14 +47,14 @@ fn retrieve_invalid_symbol() {
    let _m = base_mock("not_found", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
 
    // WHEN - we load the data
-   block_on(history::retrieve(symbol)).unwrap();
+   history::retrieve(symbol).await.unwrap();
 
    // THEN - we get an error
 }
 
-#[test]
+#[tokio::test]
 #[should_panic(expected = "NoIntraday")]
-fn retrieve_interval_invalid() {
+async fn retrieve_interval_invalid() {
    //! Ensure that we gracefully fail when we use an intraday interval
 
    // GIVEN - a valid response for an valid symbol
@@ -62,7 +62,7 @@ fn retrieve_interval_invalid() {
    let _m = base_mock("aapl", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
 
    // WHEN - we get a date range where the start date is after the end date
-   block_on(history::retrieve_interval(symbol, Interval::_1m)).unwrap();
+   history::retrieve_interval(symbol, Interval::_1m).await.unwrap();
 
    // THEN - we get an error
 }
@@ -97,8 +97,8 @@ fn retrieve_range_invalid2() {
    // THEN - we get an error
 }
 
-#[test]
-fn retrieve_no_quote_data() {
+#[tokio::test]
+async fn retrieve_no_quote_data() {
    //! Ensure that we gracefully handle the case where Yahoo send us an empty dictionary
    //! of quote data
 
@@ -107,13 +107,13 @@ fn retrieve_no_quote_data() {
    let _m = base_mock("no_quote_data", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
 
    // WHEN - we get data where the there is basically no data
-   let result = block_on(history::retrieve(symbol)).unwrap();
+   let result = history::retrieve(symbol).await.unwrap();
    assert!(result.len() == 0)
 }
 
-#[test]
+#[tokio::test]
 #[should_panic(expected = "no timestamps")]
-fn retrieve_no_timestamp_data() {
+async fn retrieve_no_timestamp_data() {
    //! Ensure that we gracefully handle the case where Yahoo send us an empty dictionary
    //! of quote data
 
@@ -122,7 +122,7 @@ fn retrieve_no_timestamp_data() {
    let _m = base_mock("no_timestamp_data", symbol, build_interval(Interval::_6mo).as_str()).unwrap().create();
 
    // WHEN - we get data where the there are no quotes
-   block_on(history::retrieve(symbol)).unwrap();
+   history::retrieve(symbol).await.unwrap();
 
    // THEN - we get an error
 }
